@@ -1,0 +1,6 @@
+{
+  "name": "The 5-Minute Mirror",
+  "description": "A 5-step communication self-review studio: record an unscripted 5-minute take, wait 24 hours, listen audio-only, watch on mute, and analyze your AI transcript.",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
