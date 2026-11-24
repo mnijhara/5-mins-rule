@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Trash2, ArrowUpRight, Search, Plus } from 'lucide-react';
 import { formatClock, formatSessionDate, isSessionUnlocked } from '../lib/format';
 import type { MirrorSession } from '../types/mirror';
+import { FocusPlanCard } from './FocusPlanCard';
 
 interface ArchiveViewProps {
   sessions: MirrorSession[];
@@ -123,6 +124,8 @@ export function ArchiveView({
           </div>
         </div>
       )}
+
+      <FocusPlanCard sessions={sessions} />
 
       {/* Filter & Search Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-4">
