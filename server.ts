@@ -727,6 +727,76 @@ Listen closely to the audio${hasBaseline ? ' pair' : ''} and return concise, hon
   }
 );
 
+app.post(
+  '/api/analyze-visual',
+  aiRateLimiter,
+  requireGeminiKey,
+  express.json({ limit: '10mb' }),
+  async (req, res) => {
+    try {
+      const { frames, durationSeconds } = req.body as {
+        frames?: string[];
+        durationSeconds?: number;
+      };
+
+      if (!Array.isArray(frames) || frames.length === 0) {
+        res.status(400).json({ error: 'At least one video frame is required.' });
+        return;
+      }
+
+      const ai = getAiClient();
+      const selectedFrames = frames.slice(0, 6);
+
+      const prompt = `You are Vinh Giang's communication and body-language coach analyzing ${selectedFrames.length} sampled video frames from a ${Math.round(durationSeconds || 15)}-second speaking take.
+Evaluate the speaker's visual delivery across four dimensions and provide one top actionable cue:
+- handGestures: Are hands visible, open, purposeful, and illustrative rather than hidden, fidgeting, or repetitive?
+- facialCongruence: Does facial expression match and amplify the emotional tone of a confident speaker?
+- postureAndStance: Is the speaker's posture upright, grounded, and open without slouching or swaying?
+- eyeLineStability: Is eye contact steady and directed toward the camera/lens rather than darting or looking away?
+- topVisualCue: 1 concrete physical adjustment to apply immediately on the next take.`;
+
+      const parts = [
+        ...selectedFrames.map((frame) => ({
+          inlineData: {
+            mimeType: 'image/jpeg',
+            data: frame.replace(/^data:image\/\w+;base64,/, ''),
+          },
+        })),
+        { text: prompt },
+      ];
+
+      const response = await generateWithHydrogenOrLite(ai, {
+        contents: { parts },
+        thinkingLevel: ThinkingLevel.LOW,
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            handGestures: { type: Type.STRING },
+            facialCongruence: { type: Type.STRING },
+            postureAndStance: { type: Type.STRING },
+            eyeLineStability: { type: Type.STRING },
+            topVisualCue: { type: Type.STRING },
+          },
+          required: [
+            'handGestures',
+            'facialCongruence',
+            'postureAndStance',
+            'eyeLineStability',
+            'topVisualCue',
+          ],
+        },
+      });
+
+      const parsed = JSON.parse((response.text ?? '{}').trim());
+      res.json(parsed);
+    } catch (err: unknown) {
+      const { status, message } = extractGeminiError(err);
+      console.error('Visual analysis error:', status, message);
+      res.status(status).json({ error: message });
+    }
+  }
+);
+
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', uptime: Math.round(process.uptime()) });
 });
