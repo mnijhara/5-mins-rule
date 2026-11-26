@@ -271,7 +271,7 @@ export default function App() {
             onClick={() => setView('landing')}
             className="shrink-0 cursor-pointer"
           >
-            <BrandLogo />
+            <BrandLogo variant={view === 'landing' ? 'light' : 'dark'} />
           </button>
 
           <nav className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm font-medium overflow-x-auto whitespace-nowrap">
