@@ -358,8 +358,8 @@ export default function App() {
             activeSessionId={activeSessionId}
             onSelectSession={handleSelectSessionFromArchive}
             onDeleteSession={handleDeleteSession}
-            onStartNewTake={handleStartNewTake
-            onLoadSample={handleLoadSample}}
+            onStartNewTake={handleStartNewTake}
+            onLoadSample={handleLoadSample}
           />
         ) : view === 'methodology' ? (
           <MethodologyView onStartNewTake={handleStartNewTake} />
@@ -433,7 +433,7 @@ export default function App() {
             )}
           </>
         )}
-      </</Suspense>
+      </Suspense>
       </main>
     </div>
   );

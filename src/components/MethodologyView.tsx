@@ -89,33 +89,38 @@ const VOCAL_FOUNDATIONS = [
   },
 ];
 
-const SATIR_GESTURES = [
+const AUTHORITY_GESTURES = [
   {
-    name: 'The Placater',
-    cue: 'Open palms facing up (rib height)',
-    use: 'Signals "I am not a threat"—ideal for opening conversations and building rapport.',
+    level: '01',
+    name: 'Placator',
+    cue: 'Palms up · open',
+    use: 'Signals "I am not a threat"—ideal for opening conversations, softening tension, and building rapport.',
   },
   {
-    name: 'The Leveler',
-    cue: 'Palms flat, facing down toward the floor',
-    use: 'Projects strength, certainty, and leadership when giving direction.',
+    level: '02',
+    name: 'Leveler',
+    cue: 'Palms down · "Here\'s the thing"',
+    use: 'Grounds the room with calm certainty, weight, and leadership when giving direction.',
   },
   {
-    name: 'The Blamer',
-    cue: 'Pointing (pro tip: use all fingers together)',
-    use: 'Creates sharp emphasis; softening to an open-hand point avoids feeling aggressive.',
+    level: '03',
+    name: 'Blamer',
+    cue: 'Even more authority',
+    use: 'Sharpens emphasis and command when drawing a firm boundary or holding attention.',
   },
   {
-    name: 'The Thinker',
-    cue: 'One arm tucked, other hand on chin/cheek',
-    use: 'Signals deep listening and thoughtful consideration.',
-  },
-  {
-    name: 'The Distracter',
-    cue: 'Single clap + wave + voice redirect',
-    use: 'Resets wandering ears and eyes when a room starts drifting.',
+    level: '04',
+    name: 'Point',
+    cue: 'One-to-many only',
+    use: 'Maximum directional authority for stages and large rooms (use an open hand or all fingers together; avoid 1-on-1).',
   },
 ];
+
+const COMPUTER_GESTURE = {
+  name: 'Computer',
+  cue: 'Hand to chin · "I\'m thinking"',
+  use: 'Signals deep analytical listening and thoughtful consideration before you respond.',
+};
 
 const LISTENING_TRAPS = [
   { trap: 'Judging', fix: 'Notice silently without rating their idea mid-sentence.' },
@@ -281,17 +286,61 @@ export function MethodologyView({ onStartNewTake }: MethodologyViewProps) {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
-              {SATIR_GESTURES.map((g) => (
-                <div
-                  key={g.name}
-                  className="rounded-2xl border border-zinc-800 bg-zinc-950/60 p-4 space-y-1.5"
-                >
-                  <h3 className="text-sm font-semibold text-zinc-100">{g.name}</h3>
-                  <p className="text-[11px] text-sky-300">{g.cue}</p>
-                  <p className="text-xs leading-relaxed text-zinc-400">{g.use}</p>
+            <div className="rounded-2xl border border-zinc-800 bg-zinc-950/60 p-5 space-y-4">
+              <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h3 className="text-sm font-semibold text-white">
+                    Dial Up Your Authority + Computer
+                  </h3>
+                  <p className="text-xs text-zinc-400">
+                    Match your hand posture to the level of authority the moment calls for—then switch to Computer when listening.
+                  </p>
                 </div>
-              ))}
+                <span className="text-[11px] font-mono uppercase tracking-wider text-sky-300">
+                  Authority Progression
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {AUTHORITY_GESTURES.map((g, idx) => (
+                  <div
+                    key={g.name}
+                    className="relative rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 space-y-1.5"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-[11px] text-zinc-500">
+                        {g.level}
+                      </span>
+                      {idx < AUTHORITY_GESTURES.length - 1 && (
+                        <ArrowRight className="hidden h-3.5 w-3.5 text-sky-400/70 lg:block" />
+                      )}
+                    </div>
+                    <h4 className="text-sm font-semibold text-zinc-100">{g.name}</h4>
+                    <p className="text-[11px] font-medium text-sky-300">[{g.cue}]</p>
+                    <p className="text-xs leading-relaxed text-zinc-400">{g.use}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Analytical / Listening Stance set apart */}
+              <div className="rounded-xl border border-amber-400/30 bg-amber-400/5 p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-md border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300">
+                      Analytical / Listening Stance
+                    </span>
+                    <span className="text-xs font-medium text-amber-200">
+                      [{COMPUTER_GESTURE.cue}]
+                    </span>
+                  </div>
+                  <h4 className="text-sm font-semibold text-white">
+                    {COMPUTER_GESTURE.name}
+                  </h4>
+                  <p className="text-xs leading-relaxed text-zinc-300">
+                    {COMPUTER_GESTURE.use}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -340,6 +389,8 @@ export function MethodologyView({ onStartNewTake }: MethodologyViewProps) {
         )}
       </section>
 
+      <StoryBankPanel />
+
       {/* Closing Quote */}
       <footer className="rounded-2xl border border-zinc-800/80 bg-zinc-950/70 p-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm italic text-zinc-300">
@@ -354,164 +405,6 @@ export function MethodologyView({ onStartNewTake }: MethodologyViewProps) {
           <span>Start Your 30-Day Baseline</span>
         </button>
       </footer>
-    </div>
-  );
-}
-  {
-    code: '01',
-    title: 'Record 5 Min — First Take · No Plan',
-    body: 'Set a camera in front of you and speak continuously for five minutes on an unscripted prompt. Do not outline or rehearse—capturing your unfiltered first take reveals the exact baseline habits you carry into real conversations.',
-  },
-  {
-    code: '02',
-    title: 'Wait 24 Hrs — Then Review It',
-    body: 'Never evaluate your recording immediately. Right after speaking, your ego is still tied to what you intended to say. Waiting 24 hours dissolves emotional attachment so you can observe yourself with the neutrality of a stranger.',
-  },
-  {
-    code: '03',
-    title: 'Listen Only — Phone Face Down',
-    body: 'Put the screen out of sight and audit purely by ear. Isolating the vocal instrument exposes your rate of speech, strategic pauses, downward authority finishes, pitch melody across the "88 keys", and filler habits.',
-  },
-  {
-    code: '04',
-    title: 'Watch on Mute — Hands · Face · Posture',
-    body: 'Watch the video at 1.5x or 2.0x speed with sound locked off. Removing words makes physical patterns unmistakable—whether your hands illustrate ideas or fidget, and whether your facial expressions unlock or flatten your tonality.',
-  },
-  {
-    code: '05',
-    title: 'AI Transcript — Word Choice · Fillers · Clarity',
-    body: 'Only after hearing and seeing the take separately do you inspect the verbatim text. Seeing every "um", "like", hedge, and circular tangent printed on the page converts vague self-criticism into concrete drills for your next 5-minute take.',
-  },
-];
-
-const THREE_CHANNELS = [
-  {
-    channel: '01 · Vocal (The Instrument)',
-    summary: 'How your voice moves across rate, pitch melody, volume, pauses, and emotion.',
-    bullets: [
-      '88-Key Melody: Move beyond 2–3 flat notes; vary pitch to hold attention.',
-      'Authority Finish: Land key statements on a downward pitch inflection.',
-      'The Volume Trap: High volume + flat tone reads as aggression; pair projection with warmth.',
-      'Strategic Silence: Replace "um" and "uh" with deliberate breathing pauses.',
-    ],
-  },
-  {
-    channel: '02 · Visual (Physical Presence)',
-    summary: 'What listeners read before a single word registers.',
-    bullets: [
-      'Face as Remote Control: A rigid face creates a monotone voice; facial energy drives tonality.',
-      'Purposeful Hands: Let gestures clarify shape, size, and contrast rather than looping nervously.',
-      'Grounded Posture: Stillness in your stance projects composure and invites trust.',
-    ],
-  },
-  {
-    channel: '03 · Verbal (Words & Story)',
-    summary: 'How clearly your ideas land and stick in someone else’s memory.',
-    bullets: [
-      'Story Over Data Dump: Wrap core insights in concrete moments rather than abstract rambling.',
-      'Cut Circular Phrasing: Notice in the verbatim transcript where a point took three loops to land.',
-      'Clean Simplicity: Replace hedging clutter with direct, intentional language.',
-    ],
-  },
-];
-
-export function MethodologyView({ onStartNewTake }: MethodologyViewProps) {
-  return (
-    <div className="max-w-4xl mx-auto flex flex-col gap-10">
-      <div className="pb-6 border-b border-[#22262E] flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <span className="font-mono-tabular text-xs text-[#FACC15] uppercase tracking-wider">
-            Based on Vinh Giang · Before We Forget: How to Connect
-          </span>
-          <h1 className="mt-1 font-display text-4xl sm:text-5xl font-bold uppercase tracking-wide text-[#F5F5F4] text-balance">
-            Communication Is an Instrument You Can Learn to Play
-          </h1>
-        </div>
-        <button
-          type="button"
-          onClick={onStartNewTake}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#FACC15] hover:bg-[#FDE047] text-[#0B0C0E] text-sm font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer"
-        >
-          <span>Record a Take</span>
-          <ArrowRight className="w-4 h-4" />
-        </button>
-      </div>
-
-      <p className="text-base text-[#D1D5DB] leading-relaxed max-w-3xl">
-        Watching yourself on video usually triggers self-judgment because sound, body language,
-        and words hit you all at once. Adapted from Vinh Giang&apos;s{' '}
-        <span className="text-[#F5F5F4] font-medium">Record &amp; Review</span> practice and his
-        book <span className="text-[#F5F5F4] font-medium">Before We Forget: How to Connect</span>,
-        The 5-Minute Mirror isolates the Vocal, Visual, and Verbal channels one pass at a time.
-      </p>
-
-      {/* The 5-Step Isolation Protocol */}
-      <section aria-labelledby="protocol-heading" className="space-y-4">
-        <h2
-          id="protocol-heading"
-          className="font-display text-2xl font-bold uppercase tracking-wide text-[#F5F5F4]"
-        >
-          The 5-Step Isolation Protocol
-        </h2>
-        <div className="divide-y divide-[#22262E] rounded-xl border border-[#22262E] bg-[#121417]">
-          {PROTOCOL_STEPS.map((step) => (
-            <div
-              key={step.code}
-              className="p-6 sm:p-7 grid grid-cols-1 sm:grid-cols-12 gap-4 items-start"
-            >
-              <div className="sm:col-span-2">
-                <span
-                  className={`font-mono-tabular text-2xl font-semibold ${
-                    step.code === '05' ? 'text-[#FACC15]' : 'text-[#9CA3AF]'
-                  }`}
-                >
-                  {step.code}
-                </span>
-              </div>
-              <div className="sm:col-span-10">
-                <h3
-                  className={`font-display text-2xl font-bold uppercase tracking-wide ${
-                    step.code === '05' ? 'text-[#FACC15]' : 'text-[#F5F5F4]'
-                  }`}
-                >
-                  {step.title}
-                </h3>
-                <p className="mt-2 text-sm text-[#9CA3AF] leading-relaxed">{step.body}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* The 3 Channels: Vocal, Visual, Verbal */}
-      <section aria-labelledby="channels-heading" className="space-y-4">
-        <h2
-          id="channels-heading"
-          className="font-display text-2xl font-bold uppercase tracking-wide text-[#F5F5F4]"
-        >
-          The 3 Channels Audited Across Your Passes
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {THREE_CHANNELS.map((item) => (
-            <div
-              key={item.channel}
-              className="p-6 rounded-xl border border-[#22262E] bg-[#121417] flex flex-col gap-3"
-            >
-              <h3 className="font-display text-xl font-bold uppercase tracking-wide text-[#FACC15]">
-                {item.channel}
-              </h3>
-              <p className="text-xs text-[#D1D5DB] leading-relaxed">{item.summary}</p>
-              <ul className="mt-2 pt-3 border-t border-[#22262E] space-y-2.5 text-xs text-[#9CA3AF] leading-relaxed">
-                {item.bullets.map((b, i) => (
-                  <li key={i}>{b}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <StoryBankPanel />
     </div>
   );
 }

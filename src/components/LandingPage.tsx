@@ -120,20 +120,16 @@ export function LandingPage({
         <div className="relative grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
           {/* Left: Editorial Copy */}
           <div className="space-y-6 lg:col-span-7">
-            <div className="inline-flex items-center gap-2 rounded-full border border-yellow-400/30 bg-yellow-400/10 px-3.5 py-1 text-xs font-medium text-yellow-300">
-              <Lock className="h-3.5 w-3.5" />
-              <span>Local-First Studio · Camera stays off until you press Start</span>
-            </div>
-
             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-[3.4rem] lg:leading-[1.06]">
-              You don&apos;t have a confidence problem.{' '}
+              Great ideas get ignored when delivery falls flat.{' '}
               <span className="bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-300 bg-clip-text text-transparent">
-                You just haven&apos;t met your own voice yet.
+                Hear and see yourself the way everyone else does.
               </span>
             </h1>
 
             <p className="max-w-xl text-base leading-relaxed text-zinc-300 sm:text-lg">
-              Record 5 unscripted minutes, wait 24 hours, then isolate your{' '}
+              Your skull alters the sound of your own voice, and a mirror flips your face.
+              Record 5 unscripted minutes, wait 24 hours for the ego to fade, then review your{' '}
               <strong className="text-white">voice</strong>,{' '}
               <strong className="text-white">body language</strong>, and{' '}
               <strong className="text-white">words</strong>—one pass at a time.
@@ -265,8 +261,8 @@ export function LandingPage({
             <div className="text-xs text-zinc-400">Coach yourself without emotional bias</div>
           </div>
           <div className="px-5 py-3.5">
-            <div className="text-sm font-semibold text-white">100% Local Capture</div>
-            <div className="text-xs text-zinc-400">Stored in IndexedDB until you run AI</div>
+            <div className="text-sm font-semibold text-white">Private by Default</div>
+            <div className="text-xs text-zinc-400">Stays on your device until you run an audit</div>
           </div>
         </div>
       </section>
@@ -367,13 +363,13 @@ export function LandingPage({
         <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5 space-y-2">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-300">
             <Lock className="h-4 w-4" />
-            <span>Zero-Upload Recording</span>
+            <span>Private Practice</span>
           </div>
           <h3 className="text-base font-semibold text-zinc-100">
-            Stored in Your Browser
+            Stays on Your Device
           </h3>
           <p className="text-xs leading-relaxed text-zinc-400">
-            Video and audio stays in local IndexedDB. Nothing is sent to a server unless you request an AI audit.
+            Your recordings remain private on your device. Nothing leaves it unless you choose to run the AI audit.
           </p>
         </div>
       </section>

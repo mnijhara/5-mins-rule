@@ -17,6 +17,19 @@ interface RecordStageProps {
 }
 
 const TARGET_SECONDS = 300; // 5:00
+const MAX_UPLOAD_BYTES = 45 * 1024 * 1024; // 45 MB
+
+function inferMimeFromFilename(name: string): string {
+  const lower = name.toLowerCase();
+  if (lower.endsWith('.mp4') || lower.endsWith('.m4v')) return 'video/mp4';
+  if (lower.endsWith('.mov')) return 'video/quicktime';
+  if (lower.endsWith('.webm')) return 'video/webm';
+  if (lower.endsWith('.mp3')) return 'audio/mpeg';
+  if (lower.endsWith('.wav')) return 'audio/wav';
+  if (lower.endsWith('.m4a')) return 'audio/mp4';
+  if (lower.endsWith('.ogg')) return 'audio/ogg';
+  return 'audio/mpeg';
+}
 
 function pickSupportedMime(candidates: string[]): string {
   for (const mime of candidates) {
@@ -30,12 +43,13 @@ function pickSupportedMime(candidates: string[]): string {
 export function RecordStage({ onSessionCreated }: RecordStageProps) {
   const [sparkIndex, setSparkIndex] = useState(0);
   const [customTitle, setCustomTitle] = useState('');
-  const [cameraMode, setCameraMode] = useState<'video' | 'audio'>('video');
+  const [cameraMode, setCameraMode] = useState<'video' | 'audio' | 'upload'>('video');
   const [mirrored, setMirrored] = useState(true);
   const [permissionError, setPermissionError] = useState<string | null>(null);
   const [streamReady, setStreamReady] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [audioLevel, setAudioLevel] = useState(0);
 
@@ -138,7 +152,12 @@ export function RecordStage({ onSessionCreated }: RecordStageProps) {
   };
 
   useEffect(() => {
-    initDevices(cameraMode);
+    if (cameraMode === 'upload') {
+      stopTracksAndMeter();
+      setPermissionError(null);
+    } else {
+      initDevices(cameraMode);
+    }
     return () => {
       if (timerRef.current !== null) {
         window.clearInterval(timerRef.current);
@@ -282,15 +301,26 @@ export function RecordStage({ onSessionCreated }: RecordStageProps) {
     }, 250);
   };
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const processUploadedFile = async (file: File) => {
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setPermissionError(
+        `File is ${(file.size / (1024 * 1024)).toFixed(1)} MB. Please upload a video or audio clip under 45 MB.`
+      );
+      return;
+    }
+
+    const resolvedMime = file.type || inferMimeFromFilename(file.name);
+    const isVideo = resolvedMime.startsWith('video/');
+    const isAudio = resolvedMime.startsWith('audio/');
+    if (!isVideo && !isAudio) {
+      setPermissionError('Unsupported file format. Please upload a video or audio file (.mp4, .mov, .webm, .mp3, .wav, .m4a).');
+      return;
+    }
 
     setIsSaving(true);
     setPermissionError(null);
 
     try {
-      const isVideo = file.type.startsWith('video/');
       const objectUrl = URL.createObjectURL(file);
 
       const detectedDuration = await new Promise<number>((resolve) => {
@@ -321,8 +351,8 @@ export function RecordStage({ onSessionCreated }: RecordStageProps) {
         bypassWait: false,
         durationSeconds: detectedDuration,
         hasVideo: isVideo,
-        videoMimeType: isVideo ? file.type || 'video/mp4' : undefined,
-        audioMimeType: file.type || (isVideo ? 'video/mp4' : 'audio/mpeg'),
+        videoMimeType: isVideo ? resolvedMime : undefined,
+        audioMimeType: resolvedMime,
         currentStep: 2,
         completedSteps: [1],
         listenChecklist: {
@@ -357,6 +387,22 @@ export function RecordStage({ onSessionCreated }: RecordStageProps) {
     }
   };
 
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    await processUploadedFile(file);
+  };
+
+  const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setIsDragging(false);
+    if (isRecording || isSaving) return;
+    const file = event.dataTransfer.files?.[0];
+    if (file) {
+      await processUploadedFile(file);
+    }
+  };
+
   const remainingSeconds = Math.max(0, TARGET_SECONDS - elapsedSeconds);
   const progressPct = Math.min(100, (elapsedSeconds / TARGET_SECONDS) * 100);
 
@@ -375,7 +421,7 @@ export function RecordStage({ onSessionCreated }: RecordStageProps) {
                 mirrored ? 'scale-x-[-1]' : ''
               } ${streamReady ? 'opacity-100' : 'opacity-0'} transition-opacity duration-200`}
             />
-          ) : (
+          ) : cameraMode === 'audio' ? (
             <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center">
               <div className="w-20 h-20 rounded-full border border-[#2E3440] bg-[#171A21] flex items-center justify-center mb-4">
                 <Mic className="w-8 h-8 text-[#F5F5F4]" strokeWidth={1.6} />
@@ -386,6 +432,37 @@ export function RecordStage({ onSessionCreated }: RecordStageProps) {
               <p className="mt-1.5 text-sm text-[#9CA3AF] max-w-md">
                 Recording microphone audio directly. You can still run the 24-hour wait,
                 listen-only review, and AI transcript audit.
+              </p>
+            </div>
+          ) : (
+            <div
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsDragging(true);
+              }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={handleDrop}
+              onClick={() => !isSaving && fileInputRef.current?.click()}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if ((e.key === 'Enter' || e.key === ' ') && !isSaving) {
+                  e.preventDefault();
+                  fileInputRef.current?.click();
+                }
+              }}
+              className={`w-full h-full flex flex-col items-center justify-center p-8 text-center cursor-pointer transition-colors ${
+                isDragging ? 'bg-[#FACC15]/10' : 'hover:bg-[#171A21]/60'
+              }`}
+            >
+              <div className="w-20 h-20 rounded-full border border-[#2E3440] bg-[#171A21] flex items-center justify-center mb-4">
+                <Upload className="w-8 h-8 text-[#FACC15]" strokeWidth={1.6} />
+              </div>
+              <p className="font-display text-2xl font-bold uppercase tracking-wide text-[#F5F5F4]">
+                {isSaving ? 'Importing Clip...' : 'Upload Video / Audio File'}
+              </p>
+              <p className="mt-1.5 text-sm text-[#9CA3AF] max-w-md">
+                Drag and drop an existing recording here, or click to browse (.mp4, .mov, .webm, .mp3, .wav, .m4a · up to 45 MB).
               </p>
             </div>
           )}
@@ -469,7 +546,7 @@ export function RecordStage({ onSessionCreated }: RecordStageProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             {!isRecording && (
               <div className="flex items-center gap-1 p-1 rounded-lg bg-[#0B0C0E] border border-[#22262E]">
                 <button
@@ -496,10 +573,32 @@ export function RecordStage({ onSessionCreated }: RecordStageProps) {
                   <Mic className="w-3.5 h-3.5" />
                   <span>Mic Only</span>
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setCameraMode('upload')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                    cameraMode === 'upload'
+                      ? 'bg-[#1F242E] text-[#F5F5F4]'
+                      : 'text-[#9CA3AF] hover:text-[#F5F5F4]'
+                  }`}
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>Upload File</span>
+                </button>
               </div>
             )}
 
-            {!isRecording ? (
+            {cameraMode === 'upload' ? (
+              <button
+                type="button"
+                disabled={isSaving}
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#FACC15] hover:bg-[#FDE047] disabled:opacity-45 text-[#0B0C0E] text-sm font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+              >
+                <Upload className="w-4 h-4" />
+                <span>{isSaving ? 'Importing...' : 'Upload Video / Audio File'}</span>
+              </button>
+            ) : !isRecording ? (
               <button
                 type="button"
                 disabled={!streamReady || isSaving}
@@ -613,7 +712,7 @@ export function RecordStage({ onSessionCreated }: RecordStageProps) {
             className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#2E3440] bg-[#171A21] hover:bg-[#1F242E] text-xs font-medium text-[#F5F5F4] transition-colors whitespace-nowrap shrink-0 cursor-pointer disabled:opacity-50"
           >
             <Upload className="w-3.5 h-3.5" />
-            <span>Import Clip</span>
+            <span>Upload Video / Audio File</span>
           </button>
         </div>
       </div>

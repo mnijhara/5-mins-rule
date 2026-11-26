@@ -1,0 +1,21 @@
+# The 5-Minute Mirror
+
+> A 5-step communication self-review studio at https://voicemirror.online/ inspired by Vinh Giang's *Before We Forget: How to Connect*.
+
+## What It Solves
+Bone conduction in your skull alters how your voice sounds to you, and a bathroom mirror flips your face. As a result, great ideas often get ignored when delivery falls flat. The 5-Minute Mirror lets you hear and see yourself the way everyone else does—one isolated pass at a time.
+
+## The 5-Step Isolation Protocol
+1. **Record 5 Min (First Take · No Plan):** Capture an unscripted 5-minute video or audio take, or upload an existing video/audio file.
+2. **Wait 24 Hrs:** Let emotional ego fade for 24 hours so you can coach yourself like a stranger.
+3. **Listen Only (Face-Down Mode):** Audit vocal foundations (Tonality, Rate of Speech, 88-Key Melody & Pitch, Volume, Power Pausing) without visual distraction.
+4. **Watch on Mute:** Review body language, posture, eye-line, and hand gestures (Authority progression: Placator → Leveler → Blamer → Point, plus Computer listening stance), with 1-click quick-tags and AI Body-Language Scan.
+5. **AI Transcript:** Analyze verbatim filler words, speaking pace (WPM), clarity, and targeted next-take drills.
+
+## Additional Features
+- **30-Day Mirror Archive:** Track streak, Day 1 vs. Latest Take deltas, Top 4 Focus Habits, and exportable Markdown reports.
+- **Methodology & Story Bank:** Reference playbook for the 5 Vocal Foundations, Power Sphere, Dial Up Your Authority + Computer, Listening Traps, and a persistent Spark → Point → Link Story Bank.
+- **Audiobook Lab:** Shadow pro narrators and compare pitch, pauses, and volume side-by-side.
+
+## Canonical URL
+- https://voicemirror.online/
