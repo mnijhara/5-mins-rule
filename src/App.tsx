@@ -17,6 +17,7 @@ import {
   saveSession,
 } from './lib/storage';
 import { formatClock, formatSessionDate, isSessionUnlocked } from './lib/format';
+import { createSampleSession } from './lib/sampleSession';;
 import type {
   AppView,
   ListenChecklist,
@@ -123,6 +124,14 @@ export default function App() {
   const handleStartNewTake = () => {
     setActiveSessionId(null);
     setActiveStep(1);
+    setView('studio');
+  };
+
+  const handleLoadSample = async () => {
+    const sample = createSampleSession();
+    await persistSession(sample);
+    setActiveSessionId(sample.id);
+    setActiveStep(sample.currentStep);
     setView('studio');
   };
 
@@ -339,6 +348,7 @@ export default function App() {
             onOpenArchive={() => setView('archive')}
             onOpenMethodology={() => setView('methodology')}
             onOpenAudiobook={() => setView('audiobook')}
+            onLoadSample={handleLoadSample}
           />
         ) : view === 'audiobook' ? (
           <AudiobookLab />
@@ -348,7 +358,8 @@ export default function App() {
             activeSessionId={activeSessionId}
             onSelectSession={handleSelectSessionFromArchive}
             onDeleteSession={handleDeleteSession}
-            onStartNewTake={handleStartNewTake}
+            onStartNewTake={handleStartNewTake
+            onLoadSample={handleLoadSample}}
           />
         ) : view === 'methodology' ? (
           <MethodologyView onStartNewTake={handleStartNewTake} />
