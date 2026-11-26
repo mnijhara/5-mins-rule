@@ -1,6 +1,6 @@
 export type MirrorStep = 1 | 2 | 3 | 4 | 5;
 
-export type AppView = 'studio' | 'audiobook' | 'archive' | 'methodology';
+export type AppView = 'landing' | 'studio' | 'audiobook' | 'archive' | 'methodology';
 
 export interface ObservationNote {
   id: string;
