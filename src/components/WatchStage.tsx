@@ -251,7 +251,7 @@ export function WatchStage({
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       {/* Left 7 cols: Strictly Muted Video Player */}
       <div className="lg:col-span-7 flex flex-col gap-6">
-        <div className="p-6 rounded-xl border border-[#22262E] bg-[#121417]">
+        <div className="p-3 sm:p-6 rounded-xl border border-[#22262E] bg-[#121417]">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
             <div>
               <span className="font-mono-tabular text-xs text-[#9CA3AF] uppercase tracking-wider">
@@ -270,13 +270,13 @@ export function WatchStage({
 
           {videoUrl ? (
             <>
-              <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-[#22262E] bg-[#0B0C0E]">
+              <div className="relative aspect-[3/4] sm:aspect-video w-full overflow-hidden rounded-xl border border-[#22262E] bg-[#0B0C0E]">
                 <video
                   ref={videoRef}
                   src={videoUrl}
                   muted
                   playsInline
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
               </div>
 
