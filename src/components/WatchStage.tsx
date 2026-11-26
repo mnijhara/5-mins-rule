@@ -223,6 +223,25 @@ export function WatchStage({
                     ))}
                   </div>
                 </div>
+<div className="flex flex-wrap items-center gap-2">
+  {VISUAL_CATEGORIES.map((cat) => (
+    <button
+      key={cat}
+      type="button"
+      onClick={() =>
+        onAddNote({
+          step: 4,
+          timestampSeconds: Math.round(currentTime),
+          category: cat,
+          text: `Quick ${cat.toLowerCase()} check`,
+        })
+      }
+      className="px-2.5 py-1 rounded-md border border-[#22262E] bg-[#0B0C0E] text-xs font-medium text-[#E5E7EB] hover:text-[#FACC15] hover:border-[#FACC15]/50 transition-colors"
+    >
+      {cat}
+    </button>
+  ))}
+</div>
               </div>
             </>
           ) : (
