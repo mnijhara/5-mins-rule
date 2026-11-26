@@ -274,7 +274,7 @@ export default function App() {
             <BrandLogo />
           </button>
 
-          <nav className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm font-medium overflow-x-auto">
+          <nav className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm font-medium overflow-x-auto whitespace-nowrap">
             <button
               type="button"
               onClick={() => setView('studio')}
