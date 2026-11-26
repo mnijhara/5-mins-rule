@@ -102,12 +102,12 @@ export function StoryBankPanel() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Working title (e.g., The Night Before Orlando)"
-          className="rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-yellow-400 focus:outline-none"
+          className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-400 focus:border-yellow-400 focus:outline-none"
         />
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value as StoryEntry['category'])}
-          className="rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 focus:border-yellow-400 focus:outline-none"
+          className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 focus:border-yellow-400 focus:outline-none"
         >
           <option value="high-stakes">High-Stakes (Inspire)</option>
           <option value="vulnerable">Vulnerable (Trust · Scars not wounds)</option>
@@ -119,42 +119,42 @@ export function StoryBankPanel() {
           value={when}
           onChange={(e) => setWhen(e.target.value)}
           placeholder="When (e.g., 30 mins before the pitch)"
-          className="rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-yellow-400 focus:outline-none"
+          className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-400 focus:border-yellow-400 focus:outline-none"
         />
         <input
           type="text"
           value={where}
           onChange={(e) => setWhere(e.target.value)}
           placeholder="Where (e.g., Backstage hallway)"
-          className="rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-yellow-400 focus:outline-none"
+          className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-400 focus:border-yellow-400 focus:outline-none"
         />
         <input
           type="text"
           value={who}
           onChange={(e) => setWho(e.target.value)}
           placeholder="Who (specific character & voice)"
-          className="rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-yellow-400 focus:outline-none"
+          className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-400 focus:border-yellow-400 focus:outline-none"
         />
         <input
           type="text"
           value={what}
           onChange={(e) => setWhat(e.target.value)}
           placeholder="What happened (chain of events)"
-          className="rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-yellow-400 focus:outline-none"
+          className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-400 focus:border-yellow-400 focus:outline-none"
         />
         <input
           type="text"
           value={spark}
           onChange={(e) => setSpark(e.target.value)}
           placeholder="The Spark (Peak emotion, action, or insight)"
-          className="sm:col-span-2 rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-yellow-400 focus:outline-none"
+          className="sm:col-span-2 rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-400 focus:border-yellow-400 focus:outline-none"
         />
         <input
           type="text"
           value={point}
           onChange={(e) => setPoint(e.target.value)}
           placeholder="The Point: The reason I'm telling you this is because..."
-          className="rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-yellow-400 focus:outline-none"
+          className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-400 focus:border-yellow-400 focus:outline-none"
         />
         <div className="flex gap-2">
           <input
@@ -162,12 +162,12 @@ export function StoryBankPanel() {
             value={link}
             onChange={(e) => setLink(e.target.value)}
             placeholder="The Link (how it applies to the listener)"
-            className="flex-1 rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-yellow-400 focus:outline-none"
+            className="flex-1 rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-400 focus:border-yellow-400 focus:outline-none"
           />
           <button
             type="submit"
             disabled={!title.trim() || !point.trim()}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-yellow-400 px-3.5 py-2 text-xs font-semibold text-zinc-950 hover:bg-yellow-300 disabled:opacity-40"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-yellow-400 px-3.5 py-2 text-xs font-semibold text-zinc-950 hover:bg-yellow-300 disabled:bg-zinc-800 disabled:text-zinc-400 disabled:opacity-100"
           >
             <Plus className="h-3.5 w-3.5" />
             <span>Save</span>
