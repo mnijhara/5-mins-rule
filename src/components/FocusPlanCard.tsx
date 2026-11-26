@@ -106,7 +106,7 @@ export function FocusPlanCard({ sessions }: FocusPlanCardProps) {
               30-Day Streak
             </div>
             <div className="text-sm font-semibold text-zinc-100">
-              {thirtyDayProgress} / 30 takes
+              {thirtyDayProgress} / 30 days
             </div>
           </div>
           <div className="h-8 w-px bg-zinc-800" />

@@ -483,6 +483,7 @@ export function ListenStage({
                 <button
                   key={item.key}
                   type="button"
+                  aria-pressed={checked}
                   onClick={() => handleToggleChecklist(item.key)}
                   className="w-full py-4 flex items-start gap-3.5 text-left group cursor-pointer"
                 >

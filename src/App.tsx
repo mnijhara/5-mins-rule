@@ -264,16 +264,16 @@ export default function App() {
     <div className="min-h-screen flex flex-col bg-[#0B0C0E] text-[#F5F5F4]">
       {/* Strict 3-Zone Top Bar */}
       <header className="w-full border-b border-[#22262E] bg-[#0B0C0E]">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-8">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 min-h-16 py-2.5 flex flex-wrap items-center justify-between gap-3 sm:gap-5">
           <button
             type="button"
             onClick={() => setView('landing')}
-            className="font-display text-2xl font-bold uppercase tracking-wide text-[#F5F5F4] whitespace-nowrap shrink-0 cursor-pointer"
+            className="font-display text-xl sm:text-2xl font-bold uppercase tracking-wide text-[#F5F5F4] whitespace-nowrap shrink-0 cursor-pointer"
           >
             The 5-Minute Mirror
           </button>
 
-          <nav className="flex items-center gap-6 text-sm font-medium">
+          <nav className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm font-medium overflow-x-auto">
             <button
               type="button"
               onClick={() => setView('studio')}
