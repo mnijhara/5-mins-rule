@@ -1,5 +1,4 @@
-export function BrandLogo({ showSubtitle = true }: { showSubtitle?: boolean }) {
-  return (
+export function BrandLogo({ showSubtitle = true, variant = 'dark' }: { showSubtitle?: boolean; variant?: 'light' | 'dark' }) {  return (
     <span className="inline-flex items-center gap-2.5">
       <svg
         viewBox="0 0 40 40"
@@ -26,11 +25,11 @@ export function BrandLogo({ showSubtitle = true }: { showSubtitle?: boolean }) {
         <rect x="29.4" y="16" width="2.6" height="8" rx="1.3" fill="#FACC15" fillOpacity="0.2" />
       </svg>
       <span className="flex flex-col text-left leading-none">
-        <span className="font-display text-xl sm:text-2xl font-bold uppercase tracking-wide text-[#F5F5F4]">
-          Voice<span className="text-[#FACC15]">Mirror</span>
+        <span className={`font-display text-xl sm:text-2xl font-bold uppercase tracking-wide ${variant === 'light' ? 'text-[#111318]' : 'text-[#F5F5F4]'}`}>
+          Voice<span className={variant === 'light' ? 'text-[#1D4ED8]' : 'text-[#FACC15]'}>Mirror</span>
         </span>
         {showSubtitle && (
-          <span className="text-[10px] font-medium uppercase tracking-widest text-[#9CA3AF]">
+          <span className={`text-[10px] font-medium uppercase tracking-widest ${variant === 'light' ? 'text-stone-500' : 'text-[#9CA3AF]'}`}>
             The 5-Minute Mirror
           </span>
         )}
