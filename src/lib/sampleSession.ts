@@ -10,11 +10,11 @@ export function createSampleSession(): MirrorSession {
     createdAt,
     unlockAt: createdAt + 24 * 60 * 60 * 1000,
     bypassWait: true,
-    durationSeconds: 184,
+    durationSeconds: 24,
     hasVideo: false,
     audioMimeType: 'audio/webm',
     currentStep: 5,
-    completedSteps: [1, 2, 3, 4, 5],
+    completedSteps: [1, 2, 3, 5],
     listenChecklist: {
       vocalVariety: true,
       pacingAndPauses: true,
