@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import { StepRail } from './components/StepRail';
-import { RecordStage } from './components/RecordStage';
-import { WaitStage } from './components/WaitStage';
-import { ListenStage } from './components/ListenStage';
-import { WatchStage } from './components/WatchStage';
-import { TranscriptStage } from './components/TranscriptStage';
-import { ArchiveView } from './components/ArchiveView';
-import { MethodologyView } from './components/MethodologyView';
-import { AudiobookLab } from './components/AudiobookLab';
+const RecordStage = React.lazy(() => import('./components/RecordStage').then((m) => ({ default: m.RecordStage })));
+const WaitStage = React.lazy(() => import('./components/WaitStage').then((m) => ({ default: m.WaitStage })));
+const ListenStage = React.lazy(() => import('./components/ListenStage').then((m) => ({ default: m.ListenStage })));
+const WatchStage = React.lazy(() => import('./components/WatchStage').then((m) => ({ default: m.WatchStage })));
+const TranscriptStage = React.lazy(() => import('./components/TranscriptStage').then((m) => ({ default: m.TranscriptStage })));
+const ArchiveView = React.lazy(() => import('./components/ArchiveView').then((m) => ({ default: m.ArchiveView })));
+const MethodologyView = React.lazy(() => import('./components/MethodologyView').then((m) => ({ default: m.MethodologyView })));
+const AudiobookLab = React.lazy(() => import('./components/AudiobookLab').then((m) => ({ default: m.AudiobookLab })));
 import { LandingPage } from './components/LandingPage';
 import {
   deleteSession,
@@ -249,7 +249,7 @@ export default function App() {
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-8">
           <button
             type="button"
-            onClick={() => setView('studio')}
+            onClick={() => setView('landing')}
             className="font-display text-2xl font-bold uppercase tracking-wide text-[#F5F5F4] whitespace-nowrap shrink-0 cursor-pointer"
           >
             The 5-Minute Mirror
@@ -327,6 +327,7 @@ export default function App() {
 
       {/* Main Content Container */}
       <main className="flex-1 w-full max-w-[1200px] mx-auto px-4 sm:px-6 py-8">
+        <Suspense fallback={<div className="py-20 text-center text-sm text-zinc-400">Loading studio...</div>}>
         {!loaded ? (
           <div className="py-16 text-center text-sm text-[#9CA3AF]">
             Loading studio workspace...
@@ -421,6 +422,7 @@ export default function App() {
             )}
           </>
         )}
+      </</Suspense>
       </main>
     </div>
   );
