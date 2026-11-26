@@ -58,10 +58,10 @@ export function createSampleSession(): MirrorSession {
     transcript: {
       generatedAt: now,
       verbatimTranscript:
-        'Last year I walked into a quarterly review with forty slides and, um, zero stories. Within three minutes everyone was checking their phones. So I closed my laptop, took a breath, and told them about the one customer call that broke our assumption. The room went completely quiet—and we made the decision in five minutes.',
+        'Last year I walked into a quarterly review with forty slides and, um, zero stories. Within three minutes, you know, everyone was checking their phones instead of listening. So I closed my laptop, you know, took a breath, and told them about the one customer call that broke our assumption. The room went completely quiet—and we made the decision in five minutes.',
       summary:
         'Clear, engaging narrative arc with strong emotional contrast between the slide deck failure and the quiet customer story.',
-      totalWords: 56,
+      totalWords: 55,
       wordsPerMinute: 138,
       pacingAssessment:
         'Well-paced conversational cadence (138 WPM) with effective slowing on the turning point.',
@@ -83,9 +83,10 @@ export function createSampleSession(): MirrorSession {
           fillersFound: ['um'],
           deliveryNote: 'Replace "um" with a silent half-second beat before "zero stories".',
         },
-        {
-          startSeconds: 19,
-          endSeconds: 45,
+        { startSeconds: 19, endSeconds: 38, text: 'Within three minutes, you know, everyone was checking their phones instead of listening.', fillersFound: ['you know'], deliveryNote: 'Trim the "you know" filler after "three minutes" to keep momentum.' }, { startSeconds: 39, endSeconds: 64, text: 'So I closed my laptop, you know, took a breath, and told them about the one customer call that broke our assumption.', fillersFound: ['you know'], deliveryNote: 'Good narrative pivot; pause briefly instead of saying "you know" after "laptop".' }, {
+          
+          startSeconds: 65,
+          endSeconds: 88,
           text: 'The room went completely quiet—and we made the decision in five minutes.',
           fillersFound: [],
           deliveryNote: 'Strong drop in volume and pace; great emotional congruence.',
@@ -102,6 +103,7 @@ export function createSampleSession(): MirrorSession {
       nextTakeDrills: [
         '88 Keys Drill: Re-record the opening sentence with a higher pitch on "forty slides" and a low, flat drop on "zero stories".',
         'Silence = Confidence: Hold a full 2-second silent pause after "completely quiet".',
+      'Volume Dial (5/10 → 2/10): Drop your volume on the closing sentence to pull listeners in.',
       ],
     },
   };
