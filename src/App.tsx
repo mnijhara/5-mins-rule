@@ -8,6 +8,7 @@ import { TranscriptStage } from './components/TranscriptStage';
 import { ArchiveView } from './components/ArchiveView';
 import { MethodologyView } from './components/MethodologyView';
 import { AudiobookLab } from './components/AudiobookLab';
+import { LandingPage } from './components/LandingPage';
 import {
   deleteSession,
   getAllSessions,
@@ -28,7 +29,7 @@ import type {
 } from './types/mirror';
 
 export default function App() {
-  const [view, setView] = useState<AppView>('studio');
+  const [view, setView] = useState<AppView>('landing');
   const [sessions, setSessions] = useState<MirrorSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [activeStep, setActiveStep] = useState<MirrorStep>(1);
@@ -330,6 +331,14 @@ export default function App() {
           <div className="py-16 text-center text-sm text-[#9CA3AF]">
             Loading studio workspace...
           </div>
+        ) : view === 'landing' ? (
+          <LandingPage
+            sessionCount={sessions.length}
+            onStartStudio={() => setView('studio')}
+            onOpenArchive={() => setView('archive')}
+            onOpenMethodology={() => setView('methodology')}
+            onOpenAudiobook={() => setView('audiobook')}
+          />
         ) : view === 'audiobook' ? (
           <AudiobookLab />
         ) : view === 'archive' ? (
