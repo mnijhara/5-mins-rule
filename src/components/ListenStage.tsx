@@ -69,6 +69,7 @@ export function ListenStage({
   const [duration, setDuration] = useState(session.durationSeconds || 0);
   const [playbackRate, setPlaybackRate] = useState<number>(1);
   const [noteCategory, setNoteCategory] = useState<string>('Tone');
+  const [faceDownMode, setFaceDownMode] = useState(false);
   const [noteText, setNoteText] = useState('');
   const [acoustics, setAcoustics] = useState<AcousticMetrics | null>(null);
 
@@ -218,7 +219,44 @@ export function ListenStage({
       {/* Left 7 cols: Acoustic "Phone Face Down" Deck */}
       <div className="lg:col-span-7 flex flex-col gap-6">
         <div className="p-8 rounded-xl border border-[#22262E] bg-[#121417]">
-          <div className="flex items-center justify-between gap-4 mb-6">
+          {faceDownMode && (
+        <div className="fixed inset-0 z-50 bg-[#0B0C0E]/98 flex flex-col items-center justify-center gap-6 p-6">
+          <div className="font-mono-tabular text-5xl sm:text-6xl font-bold text-[#F5F5F4] tracking-tight">
+            {formatClock(currentTime)}
+          </div>
+          <button
+            type="button"
+            disabled={!audioUrl}
+            onClick={togglePlay}
+            className="flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-[#F5F5F4] hover:bg-white disabled:opacity-40 text-[#0B0C0E] font-semibold text-lg transition-colors cursor-pointer"
+          >
+            {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
+            <span>{isPlaying ? 'Pause' : 'Play'}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onAddNote({
+                step: 3,
+                timestampSeconds: Math.round(currentTime),
+                category: noteCategory,
+                text: 'Quick vocal flag (eyes-closed)',
+              })
+            }
+            className="px-8 py-4 rounded-xl border border-[#FACC15]/50 bg-[#FACC15]/15 hover:bg-[#FACC15]/25 text-[#FACC15] font-medium text-base transition-colors cursor-pointer"
+          >
+            Tap to Flag Vocal Moment
+          </button>
+          <button
+            type="button"
+            onClick={() => setFaceDownMode(false)}
+            className="mt-2 px-5 py-2.5 rounded-lg border border-[#333945] text-[#9CA3AF] hover:text-[#F5F5F4] text-sm transition-colors cursor-pointer"
+          >
+            Exit Face-Down Mode
+          </button>
+        </div>
+      )}
+      <div className="flex items-center justify-between gap-4 mb-6">
             <div>
               <span className="font-mono-tabular text-xs text-[#9CA3AF] uppercase tracking-wider">
                 Step 03 · Audio Isolation
@@ -227,8 +265,17 @@ export function ListenStage({
                 Listen Only · Phone Face Down
               </h2>
             </div>
-            <div className="w-11 h-11 rounded-full border border-[#333945] bg-[#171A21] flex items-center justify-center text-[#F5F5F4] shrink-0">
-              <Volume2 className="w-5 h-5" />
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setFaceDownMode(true)}
+                className="px-3 py-1.5 rounded-lg border border-[#333945] bg-[#171A21] hover:border-[#FACC15]/60 text-xs font-medium text-[#F5F5F4] transition-colors cursor-pointer"
+              >
+                Face-Down Mode
+              </button>
+              <div className="w-11 h-11 rounded-full border border-[#333945] bg-[#171A21] flex items-center justify-center text-[#FACC15]">
+                <Volume2 className="w-5 h-5" />
+              </div>
             </div>
           </div>
 
