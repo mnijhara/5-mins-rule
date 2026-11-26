@@ -438,14 +438,14 @@ export function RecordStage({ onSessionCreated }: RecordStageProps) {
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       {/* Left 7 cols: Camera / Studio Stage */}
       <div className="lg:col-span-7 flex flex-col gap-4">
-        <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-[#22262E] bg-[#121417]">
+        <div className="relative aspect-[3/4] sm:aspect-video w-full overflow-hidden rounded-xl border border-[#22262E] bg-[#0B0C0E]">
           {cameraMode === 'video' ? (
             <video
               ref={videoPreviewRef}
               autoPlay
               playsInline
               muted
-              className={`w-full h-full object-cover ${
+              className={`w-full h-full object-contain ${
                 mirrored ? 'scale-x-[-1]' : ''
               } ${streamReady ? 'opacity-100' : 'opacity-0'} transition-opacity duration-200`}
             />
