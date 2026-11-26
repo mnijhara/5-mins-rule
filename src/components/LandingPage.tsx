@@ -17,6 +17,7 @@ interface LandingPageProps {
   onOpenArchive: () => void;
   onOpenMethodology: () => void;
   onOpenAudiobook: () => void;
+  onLoadSample?: () => void;
 }
 
 const STEPS = [
@@ -64,6 +65,7 @@ export function LandingPage({
   onOpenArchive,
   onOpenMethodology,
   onOpenAudiobook,
+  onLoadSample,
 }: LandingPageProps) {
   return (
     <div className="mx-auto max-w-6xl space-y-16 py-6 sm:py-10">
@@ -106,6 +108,16 @@ export function LandingPage({
                 <span>Resume Archive ({sessionCount})</span>
               </button>
             )}
+                {sessionCount === 0 && onLoadSample && (
+                  <button
+                    type="button"
+                    onClick={onLoadSample}
+                    className="inline-flex items-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 px-5 py-3 text-sm font-semibold text-white transition hover:border-yellow-400/60"
+                  >
+                    <Sparkles className="h-4 w-4 text-yellow-400" />
+                    <span>Explore Sample Audit</span>
+                  </button>
+                )}
 
             <button
               type="button"
