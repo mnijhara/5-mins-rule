@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Trash2, ArrowUpRight, Search, Plus } from 'lucide-react';
+import { Trash2, ArrowUpRight, Search, Plus, Download, Sparkles } from 'lucide-react';
+import { exportSessionMarkdown } from '../lib/sampleSession';
 import { formatClock, formatSessionDate, isSessionUnlocked } from '../lib/format';
 import type { MirrorSession } from '../types/mirror';
 import { FocusPlanCard } from './FocusPlanCard';
@@ -10,6 +11,7 @@ interface ArchiveViewProps {
   onSelectSession: (id: string) => void;
   onDeleteSession: (id: string) => Promise<void>;
   onStartNewTake: () => void;
+  onLoadSample?: () => void;
 }
 
 const STEP_LABELS: Record<number, string> = {
@@ -26,6 +28,7 @@ export function ArchiveView({
   onSelectSession,
   onDeleteSession,
   onStartNewTake,
+  onLoadSample,
 }: ArchiveViewProps) {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<'all' | 'ready' | 'completed'>('all');
@@ -78,7 +81,18 @@ export function ArchiveView({
           <p className="mt-1 text-sm text-[#9CA3AF]">
             All takes are stored privately on this device in IndexedDB.
           </p>
-        </div>
+          </div>
+            <div className="flex flex-wrap items-center gap-2">
+          {onLoadSample && (
+            <button
+              type="button"
+              onClick={onLoadSample}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#2A2A38] bg-[#14141B] hover:border-[#FACC15]/60 text-[#F5F5F4] text-sm font-medium transition-colors"
+            >
+              <Sparkles className="w-4 h-4 text-[#FACC15]" />
+              <span>Load Sample Take</span>
+            </button>
+          )}
 
         <button
           type="button"
@@ -88,6 +102,7 @@ export function ArchiveView({
           <Plus className="w-4 h-4" />
           <span>Record New Take</span>
         </button>
+        </div>
       </div>
 
       {sessions.length > 0 && (
@@ -184,6 +199,16 @@ export function ArchiveView({
               <span>Start First Take</span>
             </button>
           )}
+          {sessions.length === 0 && onLoadSample && (
+            <button
+              type="button"
+              onClick={onLoadSample}
+              className="mt-6 ml-3 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-[#2A2A38] bg-[#14141B] hover:border-[#FACC15]/60 text-[#F5F5F4] text-sm font-medium transition-colors"
+            >
+              <Sparkles className="w-4 h-4 text-[#FACC15]" />
+              <span>Load Sample Take</span>
+            </button>
+          )}
         </div>
       ) : (
         <div className="rounded-xl border border-[#22262E] bg-[#121417] divide-y divide-[#22262E]">
@@ -223,6 +248,16 @@ export function ArchiveView({
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
+                    {item.transcript && (
+                      <button
+                        type="button"
+                        onClick={() => exportSessionMarkdown(item)}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[#22262E] bg-[#0B0D10] hover:border-[#FACC15]/50 text-xs font-medium text-[#9CA3AF] hover:text-[#F5F5F4] transition-colors"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        <span>Export .md</span>
+                      </button>
+                    )}
                   <button
                     type="button"
                     onClick={() => onSelectSession(item.id)}
