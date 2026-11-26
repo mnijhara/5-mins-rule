@@ -262,10 +262,10 @@ export default function App() {
     : false;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0B0C0E] text-[#F5F5F4]">
+  <div className={`min-h-screen flex flex-col transition-colors ${view === 'landing' ? 'bg-[#FAF7F2] text-[#111318]' : 'bg-[#0B0C0E] text-[#F5F5F4]'}`}>  
       {/* Strict 3-Zone Top Bar */}
-      <header className="w-full border-b border-[#22262E] bg-[#0B0C0E]">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 min-h-16 py-2.5 flex flex-wrap items-center justify-between gap-3 sm:gap-5">
+      <header className={`w-full sticky top-0 z-30 backdrop-blur-md transition-colors ${view === 'landing' ? 'bg-[#FAF7F2]/90 border-b border-stone-200' : 'bg-[#0B0C0E]/90 border-b border-zinc-800'}`}>
+       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-3 sm:gap-5 whitespace-nowrap"> 
           <button
             type="button"
             onClick={() => setView('landing')}
@@ -281,7 +281,7 @@ export default function App() {
               className={`py-1 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                 view === 'studio'
                   ? 'border-[#FACC15] text-[#F5F5F4]'
-                  : 'border-transparent text-[#9CA3AF] hover:text-[#F5F5F4]'
+                 : view === 'landing' ? 'border-transparent text-stone-600 hover:text-[#111318]' : 'border-transparent text-[#9CA3AF] hover:text-[#F5F5F4]' 
               }`}
             >
               Studio
@@ -292,35 +292,37 @@ export default function App() {
               className={`py-1 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                 view === 'audiobook'
                   ? 'border-[#FACC15] text-[#F5F5F4]'
-                  : 'border-transparent text-[#9CA3AF] hover:text-[#F5F5F4]'
+                 : view === 'landing' ? 'border-transparent text-stone-600 hover:text-[#111318]' : 'border-transparent text-[#9CA3AF] hover:text-[#F5F5F4]' 
               }`}
             >
               Audiobook Lab
             </button>
-            <button
+      {sessions.length > 0 && (
+    <button
               type="button"
               onClick={() => setView('archive')}
               className={`py-1 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                 view === 'archive'
                   ? 'border-[#FACC15] text-[#F5F5F4]'
-                  : 'border-transparent text-[#9CA3AF] hover:text-[#F5F5F4]'
+                 : view === 'landing' ? 'border-transparent text-stone-600 hover:text-[#111318]' : 'border-transparent text-[#9CA3AF] hover:text-[#F5F5F4]' 
               }`}
             >
-              Archive ({sessions.length})
+              My Takes ({sessions.length})
             </button>
+      )}
             <button
               type="button"
               onClick={() => setView('methodology')}
               className={`py-1 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                 view === 'methodology'
                   ? 'border-[#FACC15] text-[#F5F5F4]'
-                  : 'border-transparent text-[#9CA3AF] hover:text-[#F5F5F4]'
+                 : view === 'landing' ? 'border-transparent text-stone-600 hover:text-[#111318]' : 'border-transparent text-[#9CA3AF] hover:text-[#F5F5F4]' 
               }`}
             >
               Methodology
             </button>
           </nav>
-
+          {view !== 'landing' && (
           <div className="shrink-0">
             <button
               type="button"
@@ -330,7 +332,8 @@ export default function App() {
               New Take
             </button>
           </div>
-        </div>
+       )}
+       </div>
       </header>
 
       {/* 5-Step Workflow Rail shown in Studio */}
