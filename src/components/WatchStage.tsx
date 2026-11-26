@@ -74,6 +74,7 @@ export function WatchStage({
   const [visualAudit, setVisualAudit] = useState<VisualAuditResult | null>(null);
   const [isScanningVisual, setIsScanningVisual] = useState(false);
   const [visualError, setVisualError] = useState<string | null>(null);
+  const [cueSaved, setCueSaved] = useState(false);
 
   const handleRunVisualScan = async () => {
     const videoEl = videoRef.current;
@@ -496,9 +497,28 @@ export function WatchStage({
             )}
             {visualAudit && (
               <div className="space-y-2 pt-2 border-t border-[#22262E] text-xs">
-                <p className="text-[#FACC15] font-medium">
-                  Top Cue: {visualAudit.topVisualCue}
-                </p>
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-[#FACC15] font-medium">
+                    Top Cue: {visualAudit.topVisualCue}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await onAddNote({
+                        step: 4,
+                        timestampSeconds: Math.round(currentTime),
+                        category: 'AI Visual',
+                        text: visualAudit.topVisualCue,
+                      });
+                      setCueSaved(true);
+                      window.setTimeout(() => setCueSaved(false), 2000);
+                    }}
+                    className="shrink-0 inline-flex items-center gap-1 rounded-md border border-[#FACC15]/30 bg-[#FACC15]/10 px-2 py-1 text-[11px] font-medium text-[#FACC15] hover:bg-[#FACC15]/20 cursor-pointer"
+                  >
+                    {cueSaved ? <Check className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
+                    <span>{cueSaved ? 'Saved' : 'Save Cue'}</span>
+                  </button>
+                </div>
                 <p className="text-[#D1D5DB]">
                   <strong className="text-[#F5F5F4]">Hand Gestures:</strong> {visualAudit.handGestures}
                 </p>

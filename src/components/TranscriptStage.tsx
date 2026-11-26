@@ -4,6 +4,7 @@ import {
   Pause,
   RefreshCw,
   Copy,
+  Download,
   Check,
   AlertCircle,
   Loader2,
@@ -120,7 +121,7 @@ export function TranscriptStage({
       setError(
         err instanceof Error
           ? err.message
-          : 'Failed to generate AI transcript. Verify your Gemini API key in Settings > Secrets.'
+          : 'Failed to generate AI transcript. Verify GEMINI_API_KEY is configured on the server.'
       );
     } finally {
       setIsGenerating(false);
@@ -150,8 +151,8 @@ export function TranscriptStage({
     }
   };
 
-  const handleCopyReport = async () => {
-    if (!analysis) return;
+  const buildMarkdownReport = (): string => {
+    if (!analysis) return '';
     const lines = [
       `# ${session.title} — The 5-Minute Mirror Report`,
       `Duration: ${formatClock(session.durationSeconds)} | Words: ${analysis.totalWords} | Pace: ${analysis.wordsPerMinute} WPM | Fillers: ${totalFillers}`,
@@ -185,10 +186,28 @@ export function TranscriptStage({
         (seg) => `[${formatClock(seg.startSeconds)}] ${seg.text}`
       ),
     ];
+    return lines.join('\n');
+  };
 
-    await navigator.clipboard.writeText(lines.join('\n'));
+  const handleCopyReport = async () => {
+    if (!analysis) return;
+    await navigator.clipboard.writeText(buildMarkdownReport());
     setCopied(true);
     window.setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownloadReport = () => {
+    if (!analysis) return;
+    const blob = new Blob([buildMarkdownReport()], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const safeName = session.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'mirror-report';
+    a.href = url;
+    a.download = `${safeName}.md`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -208,16 +227,26 @@ export function TranscriptStage({
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {analysis && (
-            <button
-              type="button"
-              onClick={handleCopyReport}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#2E3440] bg-[#171A21] hover:bg-[#1F242E] text-xs font-medium text-[#F5F5F4] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
-            >
-              {copied ? <Check className="w-3.5 h-3.5 text-[#FACC15]" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copied ? 'Copied Markdown' : 'Copy Report'}</span>
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={handleCopyReport}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#2E3440] bg-[#171A21] hover:bg-[#1F242E] text-xs font-medium text-[#F5F5F4] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+              >
+                {copied ? <Check className="w-3.5 h-3.5 text-[#FACC15]" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copied ? 'Copied Markdown' : 'Copy Report'}</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleDownloadReport}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#2E3440] bg-[#171A21] hover:bg-[#1F242E] text-xs font-medium text-[#F5F5F4] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Download .md</span>
+              </button>
+            </>
           )}
 
           <button
