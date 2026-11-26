@@ -224,19 +224,22 @@ export function LandingPage({
                   </span>
                 </div>
 
-                {/* Animated-style Waveform Bars */}
+                {/* Animated Waveform Bars */}
                 <div className="flex h-12 items-end gap-1 pt-1" aria-hidden="true">
                   {preview.bars.map((height, i) => (
                     <div
                       key={i}
-                      className={`flex-1 rounded-t transition-all duration-300 ${
+                      className={`flex-1 rounded-t animate-mirror-wave transition-all duration-300 ${
                         height > 75
                           ? 'bg-yellow-400'
                           : height > 45
                           ? 'bg-yellow-400/55'
                           : 'bg-zinc-700'
                       }`}
-                      style={{ height: `${height}%` }}
+                      style={{
+                        height: `${height}%`,
+                        animationDelay: `${i * 90}ms`,
+                      }}
                     />
                   ))}
                 </div>
@@ -321,6 +324,32 @@ export function LandingPage({
               </div>
             );
           })}
+        </div>
+      </section>
+
+      {/* Why VoiceMirror Works: Visual Story */}
+      <section className="overflow-hidden rounded-3xl border border-zinc-800/90 bg-[#0D0F12] grid grid-cols-1 lg:grid-cols-12 items-center">
+        <div className="lg:col-span-6 p-6 sm:p-10 space-y-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-yellow-400">
+            Why VoiceMirror Exists
+          </p>
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            The only mirror for your voice and presence.
+          </h2>
+          <p className="text-sm leading-relaxed text-zinc-300">
+            Every time you speak, bone conduction makes your voice sound deeper and warmer to you than it does to the room. Every time you check a mirror, it flips your face left-to-right.
+          </p>
+          <p className="text-sm leading-relaxed text-zinc-400">
+            <strong className="text-zinc-100">VoiceMirror</strong> uses <strong className="text-zinc-100">The 5-Minute Mirror</strong> protocol—record 5 unscripted minutes, wait 24 hours, then isolate voice, visuals, and words—so you can coach yourself like a stranger.
+          </p>
+        </div>
+        <div className="lg:col-span-6 h-full min-h-[240px] bg-zinc-950">
+          <img
+            src="/hero-stage.jpg"
+            alt="VoiceMirror dark acoustic studio microphone reflecting golden soundwaves"
+            className="h-full w-full object-cover"
+            loading="lazy"
+          />
         </div>
       </section>
 

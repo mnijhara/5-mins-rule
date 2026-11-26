@@ -9,6 +9,7 @@ const ArchiveView = React.lazy(() => import('./components/ArchiveView').then((m)
 const MethodologyView = React.lazy(() => import('./components/MethodologyView').then((m) => ({ default: m.MethodologyView })));
 const AudiobookLab = React.lazy(() => import('./components/AudiobookLab').then((m) => ({ default: m.AudiobookLab })));
 import { LandingPage } from './components/LandingPage';
+import { BrandLogo } from './components/BrandLogo';
 import {
   deleteSession,
   getAllSessions,
@@ -268,9 +269,9 @@ export default function App() {
           <button
             type="button"
             onClick={() => setView('landing')}
-            className="font-display text-xl sm:text-2xl font-bold uppercase tracking-wide text-[#F5F5F4] whitespace-nowrap shrink-0 cursor-pointer"
+            className="shrink-0 cursor-pointer"
           >
-            The 5-Minute Mirror
+            <BrandLogo />
           </button>
 
           <nav className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm font-medium overflow-x-auto">

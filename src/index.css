@@ -24,6 +24,22 @@
   font-variant-numeric: tabular-nums;
 }
 
+@keyframes mirrorWavePulse {
+  0%, 100% {
+    transform: scaleY(0.78);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+.animate-mirror-wave {
+  transform-origin: bottom;
+  animation: mirrorWavePulse 1.8s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
