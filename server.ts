@@ -12,6 +12,39 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
+const aiRateBuckets = new Map<string, { count: number; resetAt: number }>();
+const AI_WINDOW_MS = 15 * 60 * 1000;
+const AI_MAX_REQUESTS = 25;
+
+function aiRateLimiter(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const ip = req.ip || req.socket.remoteAddress || 'unknown';
+  const now = Date.now();
+  const entry = aiRateBuckets.get(ip);
+
+  if (!entry || now > entry.resetAt) {
+    aiRateBuckets.set(ip, { count: 1, resetAt: now + AI_WINDOW_MS });
+    return next();
+  }
+
+  if (entry.count >= AI_MAX_REQUESTS) {
+    return res.status(429).json({
+      error: 'Too many AI analysis requests. Please wait a few minutes before trying again.',
+    });
+  }
+
+  entry.count += 1;
+  return next();
+}
+
+function requireGeminiKey(_req: express.Request, res: express.Response, next: express.NextFunction) {
+  if (!process.env.GEMINI_API_KEY) {
+    return res.status(503).json({
+      error: 'AI coaching is not configured yet. Add GEMINI_API_KEY in your server environment variables.',
+    });
+  }
+  return next();
+}
+
 function getAiClient(apiVersion?: 'v1beta') {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -121,6 +154,8 @@ function normalizeMimeType(rawContentType: string | undefined): string {
 
 app.post(
   '/api/analyze-speech',
+  aiRateLimiter,
+  requireGeminiKey,
   express.raw({ type: '*/*', limit: '45mb' }),
   async (req, res) => {
     try {
@@ -331,6 +366,8 @@ Analyze this ${Math.round(durationSeconds)}-second unscripted speaking take from
 
 app.post(
   '/api/narrate-passage',
+  aiRateLimiter,
+  requireGeminiKey,
   express.json({ limit: '2mb' }),
   async (req, res) => {
     try {
@@ -435,6 +472,8 @@ app.post(
 
 app.post(
   '/api/compare-audiobook',
+  aiRateLimiter,
+  requireGeminiKey,
   express.json({ limit: '45mb' }),
   async (req, res) => {
     try {
@@ -571,6 +610,8 @@ Compare Audio 1 (User) directly against Audio 2 (Audiobook Reference) across Vin
 
 app.post(
   '/api/evaluate-drill',
+  aiRateLimiter,
+  requireGeminiKey,
   express.json({ limit: '25mb' }),
   async (req, res) => {
     try {
@@ -686,6 +727,10 @@ Listen closely to the audio${hasBaseline ? ' pair' : ''} and return concise, hon
   }
 );
 
+app.get('/api/health', (_req, res) => {
+  res.json({ status: 'ok', uptime: Math.round(process.uptime()) });
+});
+
 async function startServer() {
   if (process.env.NODE_ENV !== 'production') {
     const { createServer: createViteServer } = await import('vite');
@@ -696,8 +741,24 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.resolve(__dirname, 'dist');
-    app.use(express.static(distPath));
+    app.use(
+      '/assets',
+      express.static(path.join(distPath, 'assets'), {
+        maxAge: '30d',
+        immutable: true,
+      }),
+    );
+    app.use(
+      express.static(distPath, {
+        setHeaders: (res, filePath) => {
+          if (filePath.endsWith('index.html')) {
+            res.setHeader('Cache-Control', 'no-cache');
+          }
+        },
+      }),
+    );
     app.get('*', (_req, res) => {
+      res.setHeader('Cache-Control', 'no-cache');
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
