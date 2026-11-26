@@ -441,7 +441,7 @@ export function WatchStage({
             What to Watch For
           </h3>
           <p className="mt-1 text-xs text-[#9CA3AF]">
-            Default speed is set to 1.5x so micro-habits stand out without sound biasing you.
+            Default speed is set to 1.5x so micro-habits stand out without sound biasing you. New gestures feel <span className="text-[#F5F5F4]">unfamiliar</span>, not fake.
           </p>
 
           <div className="mt-5 divide-y divide-[#22262E]">

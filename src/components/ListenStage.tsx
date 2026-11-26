@@ -468,8 +468,13 @@ export function ListenStage({
             What to Listen For
           </h3>
           <p className="mt-1 text-xs text-[#9CA3AF]">
-            Check off each acoustic dimension once you have consciously listened for it.
+            Check off each acoustic dimension once you have consciously listened for it. If a new vocal choice feels weird, call it <span className="text-[#F5F5F4]">unfamiliar</span>—not fake.
           </p>
+          {!audioUrl && (
+            <div className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
+              No audio track is attached to this sample take. Review the checklist and notes below, or record/upload your own take to listen.
+            </div>
+          )}
 
           <div className="mt-5 divide-y divide-[#22262E]">
             {CHECKLIST_ITEMS.map((item) => {
