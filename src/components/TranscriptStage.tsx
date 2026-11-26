@@ -19,6 +19,8 @@ interface TranscriptStageProps {
   audioUrl: string | null;
   videoUrl: string | null;
   onSaveTranscript: (analysis: TranscriptAnalysis) => Promise<void>;
+  onOpenArchive?: () => void;
+  onStartNewTake?: () => void;
 }
 
 const FILLER_REGEX = /\b(um+|uh+|like|you know|actually|basically|so|right|kind of|sort of)\b/gi;
@@ -57,7 +59,10 @@ export function TranscriptStage({
   audioUrl,
   videoUrl,
   onSaveTranscript,
+  onOpenArchive,
+  onStartNewTake,
 }: TranscriptStageProps) {
+  const isSampleWithoutMedia = session.id.startsWith('sample-') && !audioBlob && !videoBlob;
   const mediaRef = useRef<HTMLVideoElement | HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -251,7 +256,8 @@ export function TranscriptStage({
 
           <button
             type="button"
-            disabled={isGenerating}
+            disabled={isGenerating || isSampleWithoutMedia}
+            title={isSampleWithoutMedia ? 'Sample take uses preloaded audit results' : undefined}
             onClick={handleGenerate}
             className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#FACC15] hover:bg-[#FDE047] disabled:opacity-50 text-[#0B0C0E] text-sm font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer"
           >
@@ -538,6 +544,42 @@ export function TranscriptStage({
               </div>
             </div>
           </div>
+
+          {/* End-of-Flow Action Bar */}
+          {(onOpenArchive || onStartNewTake) && (
+            <div className="p-6 rounded-xl border border-[#22262E] bg-[#121417] flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h3 className="text-sm font-semibold text-[#F5F5F4]">
+                  {isSampleWithoutMedia
+                    ? 'Sample Audit Complete — Ready for Your Own Baseline?'
+                    : 'Audit Complete — Lock In Your Next Rep'}
+                </h3>
+                <p className="mt-0.5 text-xs text-[#9CA3AF]">
+                  Pick 1–4 habits from your Focus Plan and apply them in your next 5-minute take.
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                {onOpenArchive && (
+                  <button
+                    type="button"
+                    onClick={onOpenArchive}
+                    className="px-4 py-2.5 rounded-lg border border-[#2E3440] bg-[#171A21] hover:bg-[#1F242E] text-xs font-medium text-[#F5F5F4] transition-colors cursor-pointer"
+                  >
+                    View 30-Day Progress
+                  </button>
+                )}
+                {onStartNewTake && (
+                  <button
+                    type="button"
+                    onClick={onStartNewTake}
+                    className="px-5 py-2.5 rounded-lg bg-[#FACC15] hover:bg-[#FDE047] text-[#0B0C0E] text-xs font-semibold transition-colors cursor-pointer"
+                  >
+                    Record Next Take
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

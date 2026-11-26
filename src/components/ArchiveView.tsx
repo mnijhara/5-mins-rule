@@ -79,7 +79,7 @@ export function ArchiveView({
             Session Archive
           </h1>
           <p className="mt-1 text-sm text-[#9CA3AF]">
-            All takes are stored privately on this device in IndexedDB.
+            All takes are stored privately on this device.
           </p>
           </div>
             <div className="flex flex-wrap items-center gap-2">

@@ -69,6 +69,15 @@ export interface TranscriptAnalysis {
   nextTakeDrills: string[];
 }
 
+export interface VisualAudit {
+  generatedAt: number;
+  handGestures: string;
+  facialCongruence: string;
+  postureAndStance: string;
+  eyeLineStability: string;
+  topVisualCue: string;
+}
+
 export interface MirrorSession {
   id: string;
   title: string;
@@ -85,6 +94,7 @@ export interface MirrorSession {
   listenChecklist: ListenChecklist;
   watchChecklist: WatchChecklist;
   notes: ObservationNote[];
+  visualAudit?: VisualAudit;
   transcript?: TranscriptAnalysis;
 }
 

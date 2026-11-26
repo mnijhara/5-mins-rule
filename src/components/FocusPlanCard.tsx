@@ -50,7 +50,10 @@ export function FocusPlanCard({ sessions }: FocusPlanCardProps) {
       ? latest.transcript.wordsPerMinute - dayOne.transcript.wordsPerMinute
       : null;
 
-  const thirtyDayProgress = Math.min(30, sessions.length);
+  const practiceDays = new Set(
+    sessions.map((s) => new Date(s.createdAt).toISOString().slice(0, 10))
+  ).size;
+  const thirtyDayProgress = Math.min(30, practiceDays);
 
   const handleAddHabit = (label: string, channel: FocusHabit['channel']) => {
     const trimmed = label.trim();

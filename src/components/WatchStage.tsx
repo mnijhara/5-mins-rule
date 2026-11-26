@@ -12,7 +12,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { formatClock } from '../lib/format';
-import type { MirrorSession, ObservationNote, WatchChecklist } from '../types/mirror';
+import type { MirrorSession, ObservationNote, VisualAudit, WatchChecklist } from '../types/mirror';
 
 interface WatchStageProps {
   session: MirrorSession;
@@ -20,15 +20,8 @@ interface WatchStageProps {
   onUpdateChecklist: (checklist: WatchChecklist) => Promise<void>;
   onAddNote: (note: Omit<ObservationNote, 'id' | 'createdAt'>) => Promise<void>;
   onDeleteNote: (noteId: string) => Promise<void>;
+  onSaveVisualAudit?: (audit: VisualAudit) => Promise<void>;
   onCompleteStep: () => Promise<void>;
-}
-
-interface VisualAuditResult {
-  handGestures: string;
-  facialCongruence: string;
-  postureAndStance: string;
-  eyeLineStability: string;
-  topVisualCue: string;
 }
 
 const WATCH_ITEMS: { key: keyof WatchChecklist; label: string; hint: string }[] = [
@@ -62,6 +55,7 @@ export function WatchStage({
   onUpdateChecklist,
   onAddNote,
   onDeleteNote,
+  onSaveVisualAudit,
   onCompleteStep,
 }: WatchStageProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -71,10 +65,14 @@ export function WatchStage({
   const [playbackRate, setPlaybackRate] = useState<number>(1.5);
   const [noteCategory, setNoteCategory] = useState<string>('Hands');
   const [noteText, setNoteText] = useState('');
-  const [visualAudit, setVisualAudit] = useState<VisualAuditResult | null>(null);
+  const [visualAudit, setVisualAudit] = useState<VisualAudit | null>(session.visualAudit ?? null);
   const [isScanningVisual, setIsScanningVisual] = useState(false);
   const [visualError, setVisualError] = useState<string | null>(null);
   const [cueSaved, setCueSaved] = useState(false);
+
+  useEffect(() => {
+    setVisualAudit(session.visualAudit ?? null);
+  }, [session.id, session.visualAudit]);
 
   const handleRunVisualScan = async () => {
     const videoEl = videoRef.current;
@@ -141,7 +139,18 @@ export function WatchStage({
       if (!res.ok) {
         throw new Error(data?.error || 'Failed to analyze visual frames.');
       }
-      setVisualAudit(data);
+      const savedAudit: VisualAudit = {
+        generatedAt: Date.now(),
+        handGestures: data.handGestures,
+        facialCongruence: data.facialCongruence,
+        postureAndStance: data.postureAndStance,
+        eyeLineStability: data.eyeLineStability,
+        topVisualCue: data.topVisualCue,
+      };
+      setVisualAudit(savedAudit);
+      if (onSaveVisualAudit) {
+        await onSaveVisualAudit(savedAudit);
+      }
     } catch (err) {
       setVisualError(
         err instanceof Error ? err.message : 'Failed to run visual scan.'

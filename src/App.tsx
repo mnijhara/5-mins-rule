@@ -26,6 +26,7 @@ import type {
   ObservationNote,
   SessionMediaBlobs,
   TranscriptAnalysis,
+  VisualAudit,
   WatchChecklist,
 } from './types/mirror';
 
@@ -227,6 +228,14 @@ export default function App() {
     });
   };
 
+  const handleSaveVisualAudit = async (visualAudit: VisualAudit) => {
+    if (!activeSession) return;
+    await persistSession({
+      ...activeSession,
+      visualAudit,
+    });
+  };
+
   const handleSelectSessionFromArchive = (id: string) => {
     const found = sessions.find((s) => s.id === id);
     if (!found) return;
@@ -419,6 +428,7 @@ export default function App() {
                 onUpdateChecklist={handleUpdateWatchChecklist}
                 onAddNote={handleAddNote}
                 onDeleteNote={handleDeleteNote}
+                onSaveVisualAudit={handleSaveVisualAudit}
                 onCompleteStep={() => handleCompleteStep(4, 5)}
               />
             ) : (
@@ -429,6 +439,8 @@ export default function App() {
                 audioUrl={audioUrl}
                 videoUrl={videoUrl}
                 onSaveTranscript={handleSaveTranscript}
+                onOpenArchive={() => setView('archive')}
+                onStartNewTake={handleStartNewTake}
               />
             )}
           </>

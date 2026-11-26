@@ -140,6 +140,19 @@ export function exportSessionMarkdown(session: MirrorSession): void {
     );
   }
 
+  if (session.visualAudit) {
+    const v = session.visualAudit;
+    lines.push(
+      '## AI Body-Language Scan',
+      `- **Top Cue:** ${v.topVisualCue}`,
+      `- **Hand Gestures:** ${v.handGestures}`,
+      `- **Facial Congruence:** ${v.facialCongruence}`,
+      `- **Posture & Stance:** ${v.postureAndStance}`,
+      `- **Eye-Line Stability:** ${v.eyeLineStability}`,
+      ''
+    );
+  }
+
   if (session.notes.length > 0) {
     lines.push(
       '## Timestamped Self-Review Notes',

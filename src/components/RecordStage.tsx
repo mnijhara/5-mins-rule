@@ -12,6 +12,23 @@ import {
 import { CONVERSATION_SPARKS, formatClock } from '../lib/format';
 import type { MirrorSession, SessionMediaBlobs } from '../types/mirror';
 
+interface StoryBankPromptItem {
+  id: string;
+  title: string;
+  spark: string;
+  point: string;
+}
+
+function loadStoryBankPrompts(): StoryBankPromptItem[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = window.localStorage.getItem('five_minute_mirror_story_bank_v1');
+    return raw ? (JSON.parse(raw) as StoryBankPromptItem[]) : [];
+  } catch {
+    return [];
+  }
+}
+
 interface RecordStageProps {
   onSessionCreated: (session: MirrorSession, media: SessionMediaBlobs) => Promise<void>;
 }
@@ -41,7 +58,10 @@ function pickSupportedMime(candidates: string[]): string {
 }
 
 export function RecordStage({ onSessionCreated }: RecordStageProps) {
+  const [storyPrompts] = useState<StoryBankPromptItem[]>(() => loadStoryBankPrompts());
+  const [promptSource, setPromptSource] = useState<'spark' | 'story'>('spark');
   const [sparkIndex, setSparkIndex] = useState(0);
+  const [storyIndex, setStoryIndex] = useState(0);
   const [customTitle, setCustomTitle] = useState('');
   const [cameraMode, setCameraMode] = useState<'video' | 'audio' | 'upload'>('video');
   const [mirrored, setMirrored] = useState(true);
@@ -201,7 +221,7 @@ export function RecordStage({ onSessionCreated }: RecordStageProps) {
 
     const now = Date.now();
     const sessionId = `take_${now}_${Math.random().toString(36).slice(2, 7)}`;
-    const sparkText = CONVERSATION_SPARKS[sparkIndex];
+    const sparkText = activePrompt;
     const title =
       customTitle.trim() ||
       `First Take · ${new Intl.DateTimeFormat('en-US', {
@@ -345,7 +365,7 @@ export function RecordStage({ onSessionCreated }: RecordStageProps) {
       const session: MirrorSession = {
         id: sessionId,
         title: customTitle.trim() || cleanName || 'Uploaded Take',
-        prompt: CONVERSATION_SPARKS[sparkIndex],
+        prompt: activePrompt,
         createdAt: now,
         unlockAt: now + 24 * 60 * 60 * 1000,
         bypassWait: false,
@@ -402,6 +422,14 @@ export function RecordStage({ onSessionCreated }: RecordStageProps) {
       await processUploadedFile(file);
     }
   };
+
+  const activePrompt =
+    promptSource === 'story' && storyPrompts.length > 0
+      ? `Relive "${storyPrompts[storyIndex % storyPrompts.length].title}": ${
+          storyPrompts[storyIndex % storyPrompts.length].spark ||
+          storyPrompts[storyIndex % storyPrompts.length].point
+        }`
+      : CONVERSATION_SPARKS[sparkIndex];
 
   const remainingSeconds = Math.max(0, TARGET_SECONDS - elapsedSeconds);
   const progressPct = Math.min(100, (elapsedSeconds / TARGET_SECONDS) * 100);
@@ -667,15 +695,37 @@ export function RecordStage({ onSessionCreated }: RecordStageProps) {
 
           <div className="mt-5 pt-5 border-t border-[#22262E]">
             <div className="flex items-center justify-between gap-2 mb-2">
-              <span className="text-xs font-medium text-[#D1D5DB]">
-                Conversation Spark
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-medium text-[#D1D5DB]">
+                  {promptSource === 'story' && storyPrompts.length > 0
+                    ? 'Story Bank Drill'
+                    : 'Conversation Spark'}
+                </span>
+                {storyPrompts.length > 0 && (
+                  <button
+                    type="button"
+                    disabled={isRecording}
+                    onClick={() =>
+                      setPromptSource((prev) => (prev === 'spark' ? 'story' : 'spark'))
+                    }
+                    className="rounded-md border border-[#2E3440] bg-[#171A21] px-2 py-0.5 text-[11px] text-[#9CA3AF] hover:text-[#F5F5F4] disabled:opacity-40 cursor-pointer"
+                  >
+                    {promptSource === 'spark'
+                      ? `Use Story Bank (${storyPrompts.length})`
+                      : 'Use Spark'}
+                  </button>
+                )}
+              </div>
               <button
                 type="button"
                 disabled={isRecording}
-                onClick={() =>
-                  setSparkIndex((prev) => (prev + 1) % CONVERSATION_SPARKS.length)
-                }
+                onClick={() => {
+                  if (promptSource === 'story' && storyPrompts.length > 0) {
+                    setStoryIndex((prev) => (prev + 1) % storyPrompts.length);
+                  } else {
+                    setSparkIndex((prev) => (prev + 1) % CONVERSATION_SPARKS.length);
+                  }
+                }}
                 className="flex items-center gap-1.5 text-xs font-medium text-[#FACC15] hover:text-[#FDE047] disabled:opacity-40 cursor-pointer whitespace-nowrap shrink-0"
               >
                 <Shuffle className="w-3.5 h-3.5" />
@@ -683,7 +733,7 @@ export function RecordStage({ onSessionCreated }: RecordStageProps) {
               </button>
             </div>
             <p className="p-3.5 rounded-lg bg-[#0B0C0E] border border-[#22262E] text-sm text-[#E5E7EB] leading-relaxed">
-              {CONVERSATION_SPARKS[sparkIndex]}
+              {activePrompt}
             </p>
           </div>
         </div>
