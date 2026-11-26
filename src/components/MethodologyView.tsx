@@ -11,6 +11,7 @@ import {
   Sparkles,
   Volume2,
 } from 'lucide-react';
+import { StoryBankPanel } from './StoryBankPanel';
 
 interface MethodologyViewProps {
   onStartNewTake: () => void;
@@ -509,6 +510,8 @@ export function MethodologyView({ onStartNewTake }: MethodologyViewProps) {
           ))}
         </div>
       </section>
+
+      <StoryBankPanel />
     </div>
   );
 }
