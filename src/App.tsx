@@ -337,19 +337,19 @@ export default function App() {
       </header>
 
       {/* 5-Step Workflow Rail shown in Studio */}
-      {view === 'studio' && (
+      {view === 'studio' && (<div className="pt-3">
         <StepRail
           activeStep={activeStep}
           completedSteps={activeSession?.completedSteps ?? []}
           hasSession={Boolean(activeSession)}
           isUnlocked={isUnlocked}
           onSelectStep={handleSelectStep}
-        />
+        /></div>
       )}
 
       {/* Main Content Container */}
       <main className="flex-1 w-full max-w-[1200px] mx-auto px-4 sm:px-6 py-8">
-        <Suspense fallback={<div className="py-20 text-center text-sm text-zinc-400">Loading studio...</div>}>
+        <Suspense fallback={<div className="py-20 text-center text-sm text-zinc-400">Loading...</div>}>
         {!loaded ? (
           <div className="py-16 text-center text-sm text-[#9CA3AF]">
             Loading studio workspace...
@@ -450,7 +450,7 @@ export default function App() {
           </>
         )}
       </Suspense>
-      </main>
+      </main><footer className={`border-t py-6 text-center text-xs ${view === 'landing' ? 'border-stone-200 text-stone-500' : 'border-[#22262F] text-[#9CA3AF]'}`}>VoiceMirror · The 5-Minute Mirror · Recordings stay in your browser until you request an AI audit</footer>
     </div>
   );
 }
