@@ -8,6 +8,8 @@ import {
   ArrowRight,
   Check,
   VideoOff,
+  Sparkles,
+  Loader2,
 } from 'lucide-react';
 import { formatClock } from '../lib/format';
 import type { MirrorSession, ObservationNote, WatchChecklist } from '../types/mirror';
@@ -19,6 +21,14 @@ interface WatchStageProps {
   onAddNote: (note: Omit<ObservationNote, 'id' | 'createdAt'>) => Promise<void>;
   onDeleteNote: (noteId: string) => Promise<void>;
   onCompleteStep: () => Promise<void>;
+}
+
+interface VisualAuditResult {
+  handGestures: string;
+  facialCongruence: string;
+  postureAndStance: string;
+  eyeLineStability: string;
+  topVisualCue: string;
 }
 
 const WATCH_ITEMS: { key: keyof WatchChecklist; label: string; hint: string }[] = [
@@ -61,6 +71,88 @@ export function WatchStage({
   const [playbackRate, setPlaybackRate] = useState<number>(1.5);
   const [noteCategory, setNoteCategory] = useState<string>('Hands');
   const [noteText, setNoteText] = useState('');
+  const [visualAudit, setVisualAudit] = useState<VisualAuditResult | null>(null);
+  const [isScanningVisual, setIsScanningVisual] = useState(false);
+  const [visualError, setVisualError] = useState<string | null>(null);
+
+  const handleRunVisualScan = async () => {
+    const videoEl = videoRef.current;
+    if (!videoEl || !videoUrl || isScanningVisual) return;
+
+    setIsScanningVisual(true);
+    setVisualError(null);
+
+    const wasPlaying = !videoEl.paused;
+    const prevTime = videoEl.currentTime;
+    if (wasPlaying) videoEl.pause();
+
+    try {
+      const targetDuration =
+        videoEl.duration && Number.isFinite(videoEl.duration)
+          ? videoEl.duration
+          : duration;
+
+      if (!targetDuration || targetDuration <= 0) {
+        throw new Error('Video duration is unavailable for visual scanning.');
+      }
+
+      const canvas = document.createElement('canvas');
+      const vw = videoEl.videoWidth || 640;
+      const vh = videoEl.videoHeight || 360;
+      const scale = Math.min(1, 640 / vw);
+      canvas.width = Math.round(vw * scale);
+      canvas.height = Math.round(vh * scale);
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        throw new Error('Could not initialize canvas for frame sampling.');
+      }
+
+      const percentages = [0.15, 0.4, 0.65, 0.85];
+      const frames: string[] = [];
+
+      for (const pct of percentages) {
+        await new Promise<void>((resolve) => {
+          const onSeeked = () => {
+            videoEl.removeEventListener('seeked', onSeeked);
+            resolve();
+          };
+          videoEl.addEventListener('seeked', onSeeked, { once: true });
+          videoEl.currentTime = pct * targetDuration;
+          window.setTimeout(() => {
+            videoEl.removeEventListener('seeked', onSeeked);
+            resolve();
+          }, 1500);
+        });
+        ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+        frames.push(canvas.toDataURL('image/jpeg', 0.75));
+      }
+
+      const res = await fetch('/api/analyze-visual', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          frames,
+          durationSeconds: Math.round(targetDuration),
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error || 'Failed to analyze visual frames.');
+      }
+      setVisualAudit(data);
+    } catch (err) {
+      setVisualError(
+        err instanceof Error ? err.message : 'Failed to run visual scan.'
+      );
+    } finally {
+      videoEl.currentTime = prevTime;
+      if (wasPlaying) {
+        videoEl.play().catch(() => {});
+      }
+      setIsScanningVisual(false);
+    }
+  };
 
   const watchNotes = session.notes.filter((n) => n.step === 4);
 
@@ -370,6 +462,57 @@ export function WatchStage({
                 </button>
               );
             })}
+          </div>
+
+          <div className="mt-6 p-4 rounded-xl border border-[#22262E] bg-[#0B0C0E] space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#FACC15]" />
+                <span className="text-sm font-semibold text-[#F5F5F4]">
+                  AI Body-Language Scan
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={handleRunVisualScan}
+                disabled={!videoUrl || isScanningVisual}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#FACC15]/15 text-[#FACC15] border border-[#FACC15]/30 hover:bg-[#FACC15]/25 disabled:opacity-40 cursor-pointer"
+              >
+                {isScanningVisual ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Scanning...</span>
+                  </>
+                ) : (
+                  <span>{visualAudit ? 'Re-scan' : 'Run Visual Scan'}</span>
+                )}
+              </button>
+            </div>
+            <p className="text-xs text-[#9CA3AF]">
+              Samples 4 silent frames (15%, 40%, 65%, 85%) to audit gestures, posture, eye-line, and facial congruence.
+            </p>
+            {visualError && (
+              <p className="text-xs text-red-400">{visualError}</p>
+            )}
+            {visualAudit && (
+              <div className="space-y-2 pt-2 border-t border-[#22262E] text-xs">
+                <p className="text-[#FACC15] font-medium">
+                  Top Cue: {visualAudit.topVisualCue}
+                </p>
+                <p className="text-[#D1D5DB]">
+                  <strong className="text-[#F5F5F4]">Hand Gestures:</strong> {visualAudit.handGestures}
+                </p>
+                <p className="text-[#D1D5DB]">
+                  <strong className="text-[#F5F5F4]">Facial Congruence:</strong> {visualAudit.facialCongruence}
+                </p>
+                <p className="text-[#D1D5DB]">
+                  <strong className="text-[#F5F5F4]">Posture &amp; Stance:</strong> {visualAudit.postureAndStance}
+                </p>
+                <p className="text-[#D1D5DB]">
+                  <strong className="text-[#F5F5F4]">Eye-Line Stability:</strong> {visualAudit.eyeLineStability}
+                </p>
+              </div>
+            )}
           </div>
 
           <button
